@@ -27,6 +27,7 @@ class Card {
 
     this.paddingX = 25;
     this.paddingY = 35;
+    this.paddingYContent = 20;
     this.titlePrefixIcon = titlePrefixIcon;
     this.animations = true;
   }
@@ -122,7 +123,7 @@ class Card {
       >
         <style>
           .header {
-            font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif;
+            font: 500 18px 'Segoe UI', Ubuntu, Sans-Serif;
             fill: ${this.colors.titleColor};
             animation: fadeInAnimation 0.8s ease-in-out forwards;
           }
@@ -142,9 +143,9 @@ class Card {
           data-testid="card-bg"
           x="0.5"
           y="0.5"
-          rx="4.5"
+          rx="16"
           height="99%"
-          stroke="#E4E2E2"
+          stroke="#0002"
           width="${this.width - 1}"
           fill="${
             typeof this.colors.bgColor === "object"
@@ -159,7 +160,7 @@ class Card {
         <g
           data-testid="main-card-body"
           transform="translate(0, ${
-            this.hideTitle ? this.paddingX : this.paddingY + 20
+            this.hideTitle ? this.paddingX : this.paddingY + this.paddingYContent
           })"
         >
           ${body}

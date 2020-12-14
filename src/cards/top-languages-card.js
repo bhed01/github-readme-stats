@@ -5,20 +5,19 @@ const { langCardLocales } = require("../translations");
 const I18n = require("../common/I18n");
 
 const createProgressTextNode = ({ width, color, name, progress }) => {
-  const paddingRight = 95;
-  const progressTextX = width - paddingRight + 10;
+  const paddingRight = 50;
   const progressWidth = width - paddingRight;
 
   return `
     <text data-testid="lang-name" x="2" y="15" class="lang-name">${name}</text>
-    <text x="${progressTextX}" y="34" class="lang-name">${progress}%</text>
+    <text text-anchor="end" x="${progressWidth}" y="15" class="lang-name">${progress}%</text>
     ${createProgressNode({
       x: 0,
-      y: 25,
+      y: 22,
       color,
       width: progressWidth,
       progress,
-      progressBarBackgroundColor: "#ddd",
+      progressBarBackgroundColor: "#aaa",
     })}
   `;
 };
@@ -110,8 +109,8 @@ const renderTopLanguages = (topLangs, options = {}) => {
     theme,
   });
 
-  let width = isNaN(card_width) ? 300 : card_width;
-  let height = 45 + (langs.length + 1) * 40;
+  let width = isNaN(card_width) ? 350 : card_width;
+  let height = 23 + (langs.length + 1) * 33;
 
   let finalLayout = "";
 
@@ -173,7 +172,7 @@ const renderTopLanguages = (topLangs, options = {}) => {
           progress: ((lang.size / totalLanguageSize) * 100).toFixed(2),
         });
       }),
-      gap: 40,
+      gap: 33,
       direction: "column",
     }).join("");
   }
@@ -190,6 +189,7 @@ const renderTopLanguages = (topLangs, options = {}) => {
     },
   });
 
+  card.paddingYContent = 10;
   card.disableAnimations();
   card.setHideBorder(hide_border);
   card.setHideTitle(hide_title);

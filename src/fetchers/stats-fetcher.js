@@ -1,7 +1,6 @@
 const { request, logger, CustomError } = require("../common/utils");
 const axios = require("axios");
 const retryer = require("../common/retryer");
-const calculateRank = require("../calculateRank");
 const githubUsernameRegex = require("github-username-regex");
 
 require("dotenv").config();
@@ -97,7 +96,6 @@ async function fetchStats(
     totalIssues: 0,
     totalStars: 0,
     contributedTo: 0,
-    rank: { level: "C", score: 0 },
   };
 
   let res = await retryer(fetcher, { login: username });
@@ -136,16 +134,6 @@ async function fetchStats(
   stats.totalStars = user.repositories.nodes.reduce((prev, curr) => {
     return prev + curr.stargazers.totalCount;
   }, 0);
-
-  stats.rank = calculateRank({
-    totalCommits: stats.totalCommits,
-    totalRepos: user.repositories.totalCount,
-    followers: user.followers.totalCount,
-    contributions: stats.contributedTo,
-    stargazers: stats.totalStars,
-    prs: stats.totalPRs,
-    issues: stats.totalIssues,
-  });
 
   return stats;
 }

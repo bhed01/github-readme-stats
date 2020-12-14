@@ -6,8 +6,6 @@ const { statCardLocales } = require("../translations");
 const {
   kFormatter,
   FlexLayout,
-  clampValue,
-  measureText,
   getCardColors,
 } = require("../common/utils");
 
@@ -34,8 +32,9 @@ const createTextNode = ({
   return `
     <g class="stagger" style="animation-delay: ${staggerDelay}ms" transform="translate(25, 0)">
       ${iconSvg}
-      <text class="stat bold" ${labelOffset} y="12.5">${label}:</text>
+      <text class="stat" ${labelOffset} y="12.5">${label}:</text>
       <text 
+        text-anchor="end"
         class="stat" 
         x="${(showIcons ? 140 : 120) + shiftValuePos}" 
         y="12.5" 
@@ -52,15 +51,13 @@ const renderStatsCard = (stats = {}, options = { hide: [] }) => {
     totalCommits,
     totalIssues,
     totalPRs,
-    contributedTo,
-    rank,
+    contributedTo
   } = stats;
   const {
     hide = [],
     show_icons = false,
     hide_title = false,
     hide_border = false,
-    hide_rank = false,
     include_all_commits = false,
     line_height = 25,
     title_color,
@@ -128,8 +125,6 @@ const renderStatsCard = (stats = {}, options = { hide: [] }) => {
     },
   };
 
-  const isLongLocale = ["fr", "pt-br", "es"].includes(locale) === true;
-
   // filter out hidden stats defined by user & create the text nodes
   const statItems = Object.keys(STATS)
     .filter((key) => !hide.includes(key))
@@ -139,60 +134,21 @@ const renderStatsCard = (stats = {}, options = { hide: [] }) => {
         ...STATS[key],
         index,
         showIcons: show_icons,
-        shiftValuePos:
-          (!include_all_commits ? 50 : 20) + (isLongLocale ? 50 : 0),
+        shiftValuePos: 160,
       }),
     );
 
   // Calculate the card height depending on how many items there are
-  // but if rank circle is visible clamp the minimum height to `150`
-  let height = Math.max(
-    45 + (statItems.length + 1) * lheight,
-    hide_rank ? 0 : 150,
-  );
+  let height = 45 + (statItems.length + 1) * lheight;
 
-  // Conditionally rendered elements
-  const rankCircle = hide_rank
-    ? ""
-    : `<g data-testid="rank-circle" 
-          transform="translate(400, ${height / 2 - 50})">
-        <circle class="rank-circle-rim" cx="-10" cy="8" r="40" />
-        <circle class="rank-circle" cx="-10" cy="8" r="40" />
-        <g class="rank-text">
-          <text
-            x="${rank.level.length === 1 ? "-4" : "0"}"
-            y="0"
-            alignment-baseline="central"
-            dominant-baseline="central"
-            text-anchor="middle"
-          >
-            ${rank.level}
-          </text>
-        </g>
-      </g>`;
-
-  // the better user's score the the rank will be closer to zero so
-  // subtracting 100 to get the progress in 100%
-  const progress = 100 - rank.score;
   const cssStyles = getStyles({
     titleColor,
     textColor,
     iconColor,
     show_icons,
-    progress,
   });
 
-  const calculateTextWidth = () => {
-    return measureText(custom_title ? custom_title : i18n.t("statcard.title"));
-  };
-
-  const width = hide_rank
-    ? clampValue(
-        50 /* padding */ + calculateTextWidth() * 2,
-        270 /* min */,
-        Infinity,
-      )
-    : 495;
+  const width = 350;
 
   const card = new Card({
     customTitle: custom_title,
@@ -214,8 +170,6 @@ const renderStatsCard = (stats = {}, options = { hide: [] }) => {
   if (disable_animations) card.disableAnimations();
 
   return card.render(`
-    ${rankCircle}
-
     <svg x="0" y="0">
       ${FlexLayout({
         items: statItems,
